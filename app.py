@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd 
 import plotly.express as px
 from analysis import analyze_sales
+from insights import generate_insights
 
 st.title("AI Powered Business Insights Dashboard")
 
@@ -48,11 +49,18 @@ if uploaded_file:
 
     st.plotly_chart(fig3)
 
+    st.subheader("Business Insights")
+
+    insights = generate_insights(results)
+
+    for insight in insights:
+        st.write(f"- {insight}")
+
 st.markdown(
     """
     <hr>
     <div style="text-align: right; font-size: 14px;">
-        Designed & Developed by Prajakta Singhal
+        Built by Prajakta Singhal
     </div>
     """,
     unsafe_allow_html=True
