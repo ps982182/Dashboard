@@ -24,8 +24,4 @@ Day 1:
 - Dataset upload functionality
 - Dataset preview dashboard
 
-Day 2:
-- Created automatic analysis 
-- Dataset upload functionality
-
 More features coming soon.
