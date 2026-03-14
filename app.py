@@ -156,7 +156,7 @@ st.markdown(
     """
     <hr>
     <div style="text-align:center;font-size:14px;">
-        Built by Prajakta Singhal
+        Built by Prajakta Singhal • AI Business Insights Dashboard
     </div>
     """,
     unsafe_allow_html=True
