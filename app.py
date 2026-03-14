@@ -13,7 +13,7 @@ st.set_page_config(
 st.title("📊 AI-Powered Business Insights Dashboard")
 st.caption("Analyze sales data and generate business insights automatically")
 
-# Sidebar dataset selector
+# Sidebar
 st.sidebar.header("Dataset Options")
 
 dataset_option = st.sidebar.selectbox(
@@ -28,7 +28,7 @@ dataset_option = st.sidebar.selectbox(
 
 df = None
 
-# Upload dataset
+# Dataset loading
 if dataset_option == "Upload Your Own Dataset":
 
     uploaded_file = st.sidebar.file_uploader(
@@ -38,7 +38,6 @@ if dataset_option == "Upload Your Own Dataset":
     if uploaded_file:
         df = pd.read_csv(uploaded_file)
 
-# Sample datasets
 elif dataset_option == "Sample Dataset (Small)":
     df = pd.read_csv("data/sales_data_small.csv")
 
@@ -51,14 +50,25 @@ elif dataset_option == "Sample Dataset (Large)":
 
 if df is not None:
 
+    # Dataset Preview
     st.subheader("Dataset Preview")
     st.dataframe(df)
 
-    results = analyze_sales(df)
+    # Dataset Summary
+    st.subheader("Dataset Summary")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Total Records", len(df))
+    col2.metric("Products", df["product"].nunique())
+    col3.metric("Regions", df["region"].nunique())
 
     st.divider()
 
-    # Metrics
+    # Analysis
+    results = analyze_sales(df)
+
+    # Key Metrics
     st.subheader("Key Business Metrics")
 
     col1, col2 = st.columns(2)
@@ -73,9 +83,14 @@ if df is not None:
         results["top_product"]
     )
 
+    # Top region highlight
+    top_region = results["region_sales"].idxmax()
+
+    st.success(f"Top Performing Region: {top_region}")
+
     st.divider()
 
-    # Region chart
+    # Sales by Region
     region_df = results["region_sales"].reset_index()
     region_df.columns = ["Region", "Sales"]
 
@@ -87,7 +102,7 @@ if df is not None:
         title="Sales by Region"
     )
 
-    # Monthly chart
+    # Monthly Trend
     month_df = results["monthly_sales"].reset_index()
     month_df.columns = ["Month", "Sales"]
 
@@ -99,7 +114,17 @@ if df is not None:
         title="Monthly Sales Trend"
     )
 
-    # Product chart
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # Product Performance
+    st.subheader("Product Performance")
+
     product_sales = df.groupby("product")["sales"].sum().reset_index()
 
     fig3 = px.bar(
@@ -110,15 +135,20 @@ if df is not None:
         title="Product Sales Comparison"
     )
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.plotly_chart(fig1, use_container_width=True)
-
-    with col2:
-        st.plotly_chart(fig2, use_container_width=True)
-
     st.plotly_chart(fig3, use_container_width=True)
+
+    # Product Distribution Pie Chart
+    st.subheader("Sales Distribution by Product")
+
+    fig4 = px.pie(
+        product_sales,
+        names="product",
+        values="sales",
+        title="Product Sales Share",
+        hole=0.4
+    )
+
+    st.plotly_chart(fig4, use_container_width=True)
 
     st.divider()
 
@@ -132,7 +162,7 @@ if df is not None:
 
     st.divider()
 
-    # Download reports
+    # Download Reports
     st.subheader("Download Reports")
 
     metrics_df, insights_df = generate_report(results, insights)
@@ -151,7 +181,7 @@ if df is not None:
         "text/csv"
     )
 
-
+# Footer
 st.markdown(
     """
     <hr>
