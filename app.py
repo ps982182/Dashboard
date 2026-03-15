@@ -171,6 +171,8 @@ if df is not None:
     for s in summary:
         st.success(s)
 
+    st.divider()
+
     # Download Reports
     st.subheader("Download Reports")
 
