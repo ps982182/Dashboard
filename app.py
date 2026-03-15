@@ -6,6 +6,7 @@ from insights import generate_insights
 from report import generate_report
 from forecast import forecast_sales
 from anomaly import detect_anomalies
+from query_engine import answer_query
 from ai_summary import generate_ai_summary
 
 st.set_page_config(
@@ -15,6 +16,7 @@ st.set_page_config(
 
 st.title("📊 AI-Powered Business Insights Dashboard")
 st.caption("Analyze sales data and generate business insights automatically")
+st.markdown("---")
 
 # Sidebar
 st.sidebar.header("Dataset Options")
@@ -71,10 +73,13 @@ if df is not None:
     # Analysis
     results = analyze_sales(df)
 
-    # Key Metrics
+    # KPI Cards (Professional Dashboard Style)
     st.subheader("Key Business Metrics")
 
-    col1, col2 = st.columns(2)
+    total_orders = len(df)
+    top_region = results["region_sales"].idxmax()
+
+    col1, col2, col3, col4 = st.columns(4)
 
     col1.metric(
         "Total Sales",
@@ -82,14 +87,19 @@ if df is not None:
     )
 
     col2.metric(
-        "Best Selling Product",
+        "Top Product",
         results["top_product"]
     )
 
-    # Top region highlight
-    top_region = results["region_sales"].idxmax()
+    col3.metric(
+        "Top Region",
+        top_region
+    )
 
-    st.success(f"Top Performing Region: {top_region}")
+    col4.metric(
+        "Total Orders",
+        total_orders
+    )
 
     st.divider()
 
@@ -155,7 +165,27 @@ if df is not None:
 
     st.divider()
 
-    # Insights
+    # Business Questions
+    st.subheader("Business Questions")
+
+    question = st.selectbox(
+        "Select a business question",
+        (
+            "Which product has the highest sales?",
+            "Which region has the highest sales?",
+            "What are the total sales?",
+            "Which month had the highest sales?",
+            "Which product has the lowest sales?"
+        )
+    )
+
+    if question:
+        response = answer_query(df, question)
+        st.info(response)
+
+    st.divider()
+
+    # Business Insights
     st.subheader("Business Insights")
 
     insights = generate_insights(results)
@@ -164,7 +194,6 @@ if df is not None:
         st.info(insight)
 
     st.divider()
-
 
     # Download Reports
     st.subheader("Download Reports")
@@ -187,7 +216,7 @@ if df is not None:
 
     st.divider()
 
-    # AI Business Summary 
+    # AI Business Summary
     st.subheader("AI Business Summary")
 
     summary = generate_ai_summary(results)
@@ -207,16 +236,16 @@ if df is not None:
     st.info("Forecast generated using historical sales trends.")
 
     fig_forecast = px.line(
-    forecast_df,
-    x="month",
-    y="sales",
-    markers=True,
-    title="Predicted Sales for Upcoming Months"
+        forecast_df,
+        x="month",
+        y="sales",
+        markers=True,
+        title="Predicted Sales for Upcoming Months"
     )
 
     fig_forecast.update_layout(
-    xaxis_title="Month",
-    yaxis_title="Predicted Sales"
+        xaxis_title="Month",
+        yaxis_title="Predicted Sales"
     )
 
     st.plotly_chart(fig_forecast, use_container_width=True)
@@ -225,13 +254,14 @@ if df is not None:
 
     # Anomaly Detection
     st.subheader("Sales Anomaly Detection")
+
     anomalies = detect_anomalies(df)
+
     if len(anomalies) == 0:
         st.success("No unusual sales patterns detected.")
     else:
         st.warning("Unusual sales patterns detected:")
         st.dataframe(anomalies)
-
 
 
 # Footer
