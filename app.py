@@ -207,10 +207,16 @@ if df is not None:
     forecast_df,
     x="month",
     y="sales",
-    title="Predicted Future Sales"
+    markers=True,
+    title="Predicted Sales for Upcoming Months"
     )
 
-    st.plotly_chart(fig_forecast)
+    fig_forecast.update_layout(
+    xaxis_title="Month",
+    yaxis_title="Predicted Sales"
+    )
+
+    st.plotly_chart(fig_forecast, use_container_width=True)
 
 
 
