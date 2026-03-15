@@ -5,6 +5,7 @@ from analysis import analyze_sales
 from insights import generate_insights
 from report import generate_report
 from forecast import forecast_sales
+from anomaly import detect_anomalies
 from ai_summary import generate_ai_summary
 
 st.set_page_config(
@@ -219,6 +220,17 @@ if df is not None:
     )
 
     st.plotly_chart(fig_forecast, use_container_width=True)
+
+    st.divider()
+
+    # Anomaly Detection
+    st.subheader("Sales Anomaly Detection")
+    anomalies = detect_anomalies(df)
+    if len(anomalies) == 0:
+        st.success("No unusual sales patterns detected.")
+    else:
+        st.warning("Unusual sales patterns detected:")
+        st.dataframe(anomalies)
 
 
 
