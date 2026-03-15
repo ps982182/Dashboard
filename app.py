@@ -184,6 +184,8 @@ if df is not None:
         "text/csv"
     )
 
+    st.divider()
+
     # AI Business Summary 
     st.subheader("AI Business Summary")
 
@@ -210,7 +212,6 @@ if df is not None:
 
     st.plotly_chart(fig_forecast)
 
-    st.divider()
 
 
 # Footer
